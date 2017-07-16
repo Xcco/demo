@@ -1,0 +1,21 @@
+* {
+  box-sizing: border-box;
+}
+.main {
+  display: flex;
+  justify-content: center;
+}
+.bar-left,.bar-middle,.bar-right {
+  width: 400px;
+  margin: 0 20px;
+}
+.wrap {
+  padding: 10px 10px 40px 10px;
+  background-color: rgba(180,180,180,0.5)
+}
+.wrap>img {
+  width:380px;
+}
+.placeholder {
+  height: 600px;
+}
