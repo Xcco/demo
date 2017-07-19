@@ -69,6 +69,3 @@ li {
   margin: 4px;
   cursor: pointer;
 }
-#carousel .index>li:hover {
-  background-color: rgba(255, 255, 255, 0.8);
-}
