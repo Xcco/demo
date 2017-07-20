@@ -16,21 +16,17 @@ li {
   position: relative;
   margin: 50px auto;
   width: 500px;
-  height: 423px;
+  overflow: hidden;
 }
 #carousel .page {
   position: relative;
 }
-
+#carousel .page>li {
+  float: left;
+}
 #carousel .page>li>img {
   width: 500px;
-  position: absolute;
-  display: none;
 }
-#carousel .page>li>img.show {
-  display: block;
-}
-
 #carousel .button {
   width: 40px;
   height: 40px;
@@ -72,7 +68,4 @@ li {
   border-radius: 8px;
   margin: 4px;
   cursor: pointer;
-}
-#carousel .index>li.show {
-  background-color: rgba(255, 255, 255, 0.8);
 }
