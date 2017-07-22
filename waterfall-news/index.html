@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>waterfall news</title>
+    <link rel="stylesheet" href="main.css">
+  </head>
+  <body>
+    <div id="main">
+      <div class="intro">
+        实现功能：
+        jsonp调用新浪数据；瀑布流布局；懒加载；页面尺寸改变重新布局；
+      </div>
+      <ul class="news-list">
+        <li class="news hide"></li>
+      </ul>
+      <div class="hide">
+
+      </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+    <script type="text/javascript">
+      var loadNumber = 9
+      var curPage = 1
+      var scroll
+      var boxWidth=$('.news-list .news').outerWidth(true)
+      var listNumber = Math.floor($(window).width()/boxWidth)
+      var heightList=[]
+      for(var i=0;i<listNumber;i++){
+        heightList.push(0)
+      }
+      $('.news-list').width(boxWidth*listNumber)
+//加载功能集合
+
+      function load(){
+        getData(function(news){
+          $(news).each(function(index,news){
+            var $node = $(makeNode(news))
+            $node.find('img').on('load',function(){
+              $('.news-list').append($node)
+              waterFall($node)
+            })
+          })
+        })
+      }
+//制作节点
+      function makeNode(news){
+          var node = ''
+          node += '<li class="news">'
+          node += '<a href="'+news.url+'"><img src="'+news.img_url+'" alt="fail"></a>'
+          node += '<h4>'+news.short_name+'</h4>'
+          node += '<p>'+news.short_intro+'</p>'
+          node += '</li>'
+          return node
+      }
+//瀑布流
+      function waterFall($newsBlock){
+        var minHeight= Math.min.apply(null,heightList)
+        var minIndex= heightList.indexOf(minHeight)
+        $newsBlock.css({
+          left:minIndex*boxWidth,
+          top:minHeight
+        })
+        heightList[minIndex]+=$newsBlock.outerHeight(true)
+        $('.news-list').height(Math.max.apply(null,heightList))
+      }
+//jsonp 获取数据
+      function getData(callback){
+        $.ajax({
+          method:'get',
+          url:'http://platform.sina.com.cn/slide/album_tech',
+          dataType: 'jsonp',
+        	jsonp:"jsoncallback",
+          data:{
+            app_key:'1271687855',
+            num:loadNumber,
+            page:curPage
+          }
+        })
+        .done(function(res){
+          if(res && res.status && res.status.code==='0'){
+            callback(res.data)
+          }
+        })
+      }
+//计算页面是否滚到底部
+      function isReadyLoad(){
+        if($('#main div.hide').offset().top<$(window).scrollTop()+$(window).height()+50){
+          curPage+=1
+          load()
+        }else{
+          return
+        }
+      }
+
+
+//减少响应scroll频率
+      $(window).on('scroll',function(){
+        if(scroll){
+          clearTimeout(scroll)
+        }
+        var scroll=setTimeout(isReadyLoad,300)
+
+      })
+//页面改变重新布局
+      $(window).resize(function(){
+        listNumber = Math.floor($(window).width()/boxWidth)
+        heightList=[]
+        for(var i=0;i<listNumber;i++){
+          heightList.push(0)
+        }
+        $('.news-list').width(boxWidth*listNumber)
+        var $loadedNodes=$('.news-list').children()
+        $('.main').detach($loadedNodes)
+        $loadedNodes.each(function(index,news){
+          waterFall($(news))
+        })
+      })
+//初始调用
+      $(function(){
+        load()
+        isReadyLoad()
+      })
+
+
+    </script>
+  </body>
+</html>

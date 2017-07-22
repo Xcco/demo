@@ -1,0 +1,47 @@
+* {
+  border: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+ul,li {
+  list-style: none;
+}
+.intro {
+  border: 1px solid #ccc;
+  font: 16px "STHeiti Light","Microsoft YaHei",arial;
+}
+.news-list {
+  position: relative;
+  margin: 0 auto;
+}
+.news-list .news {
+  position: absolute;
+  width: 300px;
+  border: 1px solid #ccc;
+  text-align: center;
+  padding-top: 10px;
+  margin: 10px;
+}
+.news-list .news img {
+  width: 280px;
+}
+.news-list .news h4 {
+  margin: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.news-list .news p {
+  margin: 0 10px;
+  font-size: 12px;
+  color: #999;
+}
+.news-list .news.hide {
+  margin: 0 10px;
+  height: 0;
+  border: none;
+  padding-top: 0;
+  display: none;
+}
+#main div.hide {
+  visibility: hidden;
+  height: 1px;
+}
