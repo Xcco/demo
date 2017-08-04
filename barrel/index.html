@@ -97,14 +97,12 @@
               maxWidth: that.maxWidth
             }
             that.imgCount += 1
-            console.log(that.imgCount + 't');
             that.judge(imgInfo)
           }
         }
       },
       //判断图片在当前行是否放得下
       judge: function(imgInfo) {
-        console.log(this.pageHeight);
         this.lineImg.push(imgInfo.target)
         this.lineWidth += imgInfo.width
         if (this.lineWidth + this.gap * (this.lineImg.length - 1) > imgInfo.maxWidth) {
@@ -114,9 +112,7 @@
           this.lineImg.push(imgInfo.target)
           this.lineWidth += imgInfo.width
         }
-        console.log(this.imgCount + 'i');
         if (this.imgCount === this.imgNum) {
-          console.log(2);
           this.renderLast(imgInfo)
         }
       },
@@ -129,7 +125,6 @@
         this.lineWidth -= imgInfo.width
         let practicalHeight = this.minHeight * (this.maxWidth - this.gap * (this.lineImg.length - 1)) / this.lineWidth
         $imgCt.css('top', this.pageHeight)
-        //console.log(this.pageHeight);
         this.$ct.append($imgCt)
         this.pageHeight += practicalHeight + this.gap
         this.lineImg.forEach(function(img) {
