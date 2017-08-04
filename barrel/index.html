@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>barrel</title>
+  <style>
+    p {
+      border: 1px solid #ccc;
+      font: 16px "STHeiti Light", "Microsoft YaHei", arial;
+    }
+
+    .main {
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .imgCt {
+      position: absolute;
+    }
+
+    img {
+      position: absolute;
+    }
+  </style>
+</head>
+
+<body>
+  <p>
+    实现功能： 木桶布局；原型链继承；页面尺寸改变重新布局。
+  </p>
+  <div class="main">
+  </div>
+  <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+  <script type="text/javascript">
+    //传入参数或者使用this
+    function Barrel($ct, imgNum, gap, minHeight) {
+      const that = this
+      this.$ct = $ct
+      this.imgNum = imgNum
+      this.gap = gap
+      this.minHeight = minHeight
+      this.lineWidth = 0
+      this.lineImg = []
+      this.pageHeight = 0
+      //因为最后的图片有可能先onload 所以这里记录onload图片数量
+      this.imgCount = 0
+      this.acquireWidth()
+      this.loadImg()
+      this.listenResize()
+    }
+    Barrel.prototype = {
+      listenResize: function() {
+        const that = this
+        window.addEventListener('resize', function() {
+          let resizing
+          if (resizing) {
+            clearTimeout(resizing)
+          } else {
+            resizing = setTimeout(function() {
+              that.imgCount = 0
+              that.lineWidth = 0
+              that.lineImg = []
+              that.pageHeight = 0
+              that.$ct.children().remove()
+              that.acquireWidth()
+              that.loadImg()
+            }, 300)
+          }
+        })
+      },
+      acquireWidth: function() {
+
+        if (window.innerWidth > 1600) {
+          this.maxWidth = 1600
+        } else if (window.innerWidth > 1200) {
+          this.maxWidth = 1200
+        } else {
+          this.maxWidth = 800
+        }
+        $('.main').width(this.maxWidth)
+      },
+      loadImg: function() {
+        const that = this
+        const imgs = this.getImgUrls(this.imgNum)
+        for (let i = 0; i < imgs.length; i++) {
+          const img = new Image()
+          img.src = imgs[i]
+          img.onload = function() {
+            const imgHeight = img.height
+            const imgWidth = img.width
+            const ratio = imgWidth / imgHeight
+            const imgInfo = {
+              target: img,
+              width: that.minHeight * ratio,
+              height: that.minHeight,
+              maxWidth: that.maxWidth
+            }
+            that.imgCount += 1
+            console.log(that.imgCount + 't');
+            that.judge(imgInfo)
+          }
+        }
+      },
+      //判断图片在当前行是否放得下
+      judge: function(imgInfo) {
+        console.log(this.pageHeight);
+        this.lineImg.push(imgInfo.target)
+        this.lineWidth += imgInfo.width
+        if (this.lineWidth + this.gap * (this.lineImg.length - 1) > imgInfo.maxWidth) {
+          this.render(imgInfo)
+          this.lineImg = []
+          this.lineWidth = 0
+          this.lineImg.push(imgInfo.target)
+          this.lineWidth += imgInfo.width
+        }
+        console.log(this.imgCount + 'i');
+        if (this.imgCount === this.imgNum) {
+          console.log(2);
+          this.renderLast(imgInfo)
+        }
+      },
+      render: function(imgInfo) {
+        const that = this
+        let $imgCt = $('<div class="imgCt"></div>')
+        let inlineWidth = 0
+        //去掉最后一张
+        this.lineImg.pop(imgInfo.target)
+        this.lineWidth -= imgInfo.width
+        let practicalHeight = this.minHeight * (this.maxWidth - this.gap * (this.lineImg.length - 1)) / this.lineWidth
+        $imgCt.css('top', this.pageHeight)
+        //console.log(this.pageHeight);
+        this.$ct.append($imgCt)
+        this.pageHeight += practicalHeight + this.gap
+        this.lineImg.forEach(function(img) {
+          let $img = $(img)
+          $img.height(practicalHeight)
+          $img.css('left', inlineWidth)
+          $imgCt.append($img)
+          inlineWidth += ($img.width() + that.gap)
+        })
+      },
+      renderLast: function(imgInfo) {
+        const that = this
+        let $imgCt = $('<div class="imgCt"></div>')
+        let inlineWidth = 0
+        $imgCt.css('top', this.pageHeight)
+        this.$ct.append($imgCt)
+        this.lineImg.forEach(function(img) {
+          let $img = $(img)
+          $img.height(that.minHeight)
+          $img.css('left', inlineWidth)
+          $imgCt.append($img)
+          inlineWidth += ($img.width() + that.gap)
+        })
+      },
+      getImgUrls: function(num) {
+        let urls = []
+        for (let i = 0; i < num; i++) {
+          urls.push(`imgs/${i+1}.jpg`)
+        }
+        return urls;
+      }
+    }
+
+    let load = new Barrel($('.main'), 42, 15, 400)
+  </script>
+</body>
+
+</html>
