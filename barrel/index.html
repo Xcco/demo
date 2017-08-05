@@ -36,7 +36,7 @@
   </div>
   <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
   <script type="text/javascript">
-    //传入参数或者使用this
+//传入参数或者使用this
     function Barrel($ct, imgNum, gap, minHeight) {
       const that = this
       this.$ct = $ct
@@ -46,13 +46,14 @@
       this.lineWidth = 0
       this.lineImg = []
       this.pageHeight = 0
-      //因为最后的图片有可能先onload 所以这里记录onload图片数量
+//因为最后的图片有可能先onload 所以这里记录onload图片数量
       this.imgCount = 0
       this.acquireWidth()
       this.loadImg()
       this.listenResize()
     }
     Barrel.prototype = {
+//屏幕宽度调整后自适应
       listenResize: function() {
         const that = this
         let resizing
@@ -71,8 +72,8 @@
           }, 500)
         })
       },
+//获取屏幕宽度并设置内容宽度
       acquireWidth: function() {
-
         if (window.innerWidth > 1600) {
           this.maxWidth = 1600
         } else if (window.innerWidth > 1200) {
@@ -82,6 +83,7 @@
         }
         $('.main').width(this.maxWidth)
       },
+//加载图片
       loadImg: function() {
         const that = this
         const imgs = this.getImgUrls(this.imgNum)
@@ -103,7 +105,7 @@
           }
         }
       },
-      //判断图片在当前行是否放得下
+//判断图片在当前行是否放得下
       judge: function(imgInfo) {
         this.lineImg.push(imgInfo.target)
         this.lineWidth += imgInfo.width
@@ -118,6 +120,7 @@
           this.renderLast(imgInfo)
         }
       },
+//将图片放入指定位置
       render: function(imgInfo) {
         const that = this
         let $imgCt = $('<div class="imgCt"></div>')
@@ -137,6 +140,7 @@
           inlineWidth += ($img.width() + that.gap)
         })
       },
+//最后图片不满整行时指定位置并放入
       renderLast: function(imgInfo) {
         const that = this
         let $imgCt = $('<div class="imgCt"></div>')
@@ -151,6 +155,7 @@
           inlineWidth += ($img.width() + that.gap)
         })
       },
+//获取图片src
       getImgUrls: function(num) {
         let urls = []
         for (let i = 0; i < num; i++) {
