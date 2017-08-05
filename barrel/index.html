@@ -5,6 +5,9 @@
   <meta charset="utf-8">
   <title>barrel</title>
   <style>
+    * {
+
+    }
     p {
       border: 1px solid #ccc;
       font: 16px "STHeiti Light", "Microsoft YaHei", arial;
@@ -52,21 +55,20 @@
     Barrel.prototype = {
       listenResize: function() {
         const that = this
+        let resizing
         window.addEventListener('resize', function() {
-          let resizing
           if (resizing) {
             clearTimeout(resizing)
-          } else {
-            resizing = setTimeout(function() {
-              that.imgCount = 0
-              that.lineWidth = 0
-              that.lineImg = []
-              that.pageHeight = 0
-              that.$ct.children().remove()
-              that.acquireWidth()
-              that.loadImg()
-            }, 300)
           }
+          resizing = setTimeout(function() {
+            that.imgCount = 0
+            that.lineWidth = 0
+            that.lineImg = []
+            that.pageHeight = 0
+            that.$ct.children().remove()
+            that.acquireWidth()
+            that.loadImg()
+          }, 500)
         })
       },
       acquireWidth: function() {
