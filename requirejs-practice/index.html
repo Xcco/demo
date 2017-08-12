@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>require practice</title>
+    <link rel="stylesheet" href="main.css">
+  </head>
+  <body>
+    <div id="carousel">
+      <ul class="page">
+        <li data-id="0"><img src="carousel/img/1.jpg" alt="fail"></li>
+        <li data-id="1"><img src="carousel/img/2.jpg" alt="fail"></li>
+        <li data-id="2"><img src="carousel/img/3.jpg" alt="fail"></li>
+        <li data-id="3"><img src="carousel/img/4.jpg" alt="fail"></li>
+        <li data-id="4"><img src="carousel/img/5.jpg" alt="fail"></li>
+      </ul>
+      <div class="left button"><img src="icon/arrow.png" alt="fail"></div>
+      <div class="right button"><img src="icon/arrow.png" alt="fail"></div>
+      <ul class="index">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+    <div id="backTop">
+      <div class="arrow"></div>
+    </div>
+    <div id="imgCt" class="clearfix">
+      <div class="bar" id="1s"></div>
+      <div class="bar" id="2s"></div>
+      <div class="bar" id="3s"></div>
+    </div>
+    <div id="loadAll">所有图片已加载</div>
+
+    <script src="js/require.js" data-main="./mergeMin"></script>
+  </body>
+</html>
