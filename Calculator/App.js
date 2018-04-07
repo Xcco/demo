@@ -1,4 +1,6 @@
 import React from 'react';
+import { Font } from 'expo';
+import Dimensions from 'Dimensions'
 import { 
   StyleSheet,
   Text, 
@@ -13,7 +15,7 @@ function Cell(props) {
   return(
     <TouchableHighlight
         onPress={()=>props.onPress(props.num)}
-        underlayColor="transparent"
+        underlayColor="#48586d"
         activeOpacity={0.8}>
         <View style={styles.cell}>
           <Text style={styles.textInside}>{props.num}</Text>
@@ -27,8 +29,8 @@ function Method(props) {
       onPress={()=>props.onPress(props.method)}
       underlayColor="transparent"
       activeOpacity={0.8}>
-      <View style={[styles.cell, styles.functionalButton]}>
-        <Text style={[styles.textInside, styles.functionalText]}>{props.method}</Text>
+      <View style={[styles.setRadius,props.method === '=' && styles.equal]}>
+        <Text style={[styles.textInside, styles.functionalText,props.custom]}>{props.method}</Text>
       </View>
     </TouchableHighlight>
   )
@@ -44,8 +46,25 @@ class App extends React.Component {
       backNum:'',
     }
   }
+  async componentDidMount() {
+    await Font.loadAsync({
+      customFont : require('./assets/OMNES-LI.ttf'),
+    });
+    this.setState({ fontLoaded: true })
+  }
   handlePress=(num)=>{
-    this.state.method?this.setState({backNum:num}):this.setState({frontNum:num})
+    if(this.state.count){
+      this.setState({
+        count:'',
+        method:'',
+        frontNum:'',
+        backNum:'',
+      },()=>{
+        this.state.method?this.setState({backNum:this.state.backNum+num.toString()}):this.setState({frontNum:this.state.frontNum+num.toString()})
+      })
+    }else{
+      this.state.method?this.setState({backNum:this.state.backNum+num.toString()}):this.setState({frontNum:this.state.frontNum+num.toString()})
+    }
   }
   handleCalMethod=(m)=>{
     this.state.count
@@ -60,8 +79,6 @@ class App extends React.Component {
     if(this.state.method !== ''){
       switch (this.state.method) {
         case '+':
-        console.log(parseFloat(this.state.frontNum))
-        console.log(parseFloat(this.state.backNum))
         this.setState({count:parseFloat(this.state.frontNum)+parseFloat(this.state.backNum)})
         break
         case '-':
@@ -85,70 +102,92 @@ class App extends React.Component {
       backNum:'',
     })
   }
+  handlePoint=()=>{
+    if(this.state.count){
+      return
+    }
+    if(this.state.method){
+      if(this.state.backNum){
+        this.setState({
+          backNum:this.state.backNum+'.'
+        })
+      }else{
+        this.setState({
+          backNum:'0.'
+        })
+      }
+    }else{
+      if(this.state.frontNum){
+        this.setState({
+          frontNum:this.state.frontNum+'.'
+        })
+      }else{
+        this.setState({
+          frontNum:'0.'
+        })
+      }
+    }
+  }
   render() {
-    const {frontNum,method,backNum,count}=this.state
-    return (
+    const {frontNum,method,backNum,count,fontLoaded}=this.state
+    if(this.state.fontLoaded){
+      return (
       <View style={styles.container}>
-        <Text style={styles.title}>计算器</Text>
-        <Text style={styles.showing}>{frontNum}{method}{backNum}{count?'=':undefined}</Text>
-        <Text style={styles.showing}>{count===Infinity?'em...输入有误':count}</Text>
+        {frontNum && 
+        <View style={styles.showTab}>
+          <Text style={styles.showing}>{frontNum}{method}{backNum}{count?'=':undefined}</Text>
+        </View>}
+        <View style={styles.result}>
+          <Text style={styles.resultText}>{count===Infinity?'em...输入有误':count}</Text>
+        </View>
         <View style={styles.board}>
+          <View style={styles.rows}>
+          <View style={styles.innerRow}>
+            <Method onPress={this.handleCalMethod} method={'+'} custom={{marginLeft:10}}/>
+            <Method onPress={this.handleCalMethod} method={'-'} custom={{fontSize:60,marginLeft:-5,marginTop:-2}}/>
+            <Method onPress={this.handleResult} method={'='} custom={{color:'#1c2938'}}/>
+            <Method onPress={this.handleCalMethod} method={'×'}/>
+            <Method onPress={this.handleCalMethod} method={'÷'} custom={{fontSize:45,marginTop:-3,marginRight:10}}/>
+            </View>
+          </View>
           <View style={styles.rows}>
             <Cell onPress={this.handlePress} num={1}/>
             <Cell onPress={this.handlePress} num={2}/>
             <Cell onPress={this.handlePress} num={3}/>
-            <Method onPress={this.handleCalMethod} method={'+'}/>
+            
           </View>
           <View style={styles.rows}>
             <Cell onPress={this.handlePress} num={4}/>
             <Cell onPress={this.handlePress} num={5}/>
             <Cell onPress={this.handlePress} num={6}/>
-            <Method onPress={this.handleCalMethod} method={'-'}/>
           </View>
           <View style={styles.rows}>
             <Cell onPress={this.handlePress} num={7}/>
             <Cell onPress={this.handlePress} num={8}/>
             <Cell onPress={this.handlePress} num={9}/>
-            <Method onPress={this.handleCalMethod} method={'×'}/>
           </View>
           <View style={styles.rows}>
-            <TouchableHighlight
-              onPress={this.handleClear}
-              underlayColor="transparent"
-              activeOpacity={0.8}>
-              <View style={[styles.cell, styles.functionalButton]}>
-                <Text style={[styles.textInside, styles.functionalText]}>AC</Text>
-              </View>
-            </TouchableHighlight>
-
             <Cell onPress={this.handlePress} num={0}/>
-            <TouchableHighlight
-              onPress={this.handleResult}
-              underlayColor="transparent"
-              activeOpacity={0.8}>
-              <View style={[styles.cell, styles.functionalButton]}>
-                <Text style={[styles.textInside, styles.functionalText]}>=</Text>
-              </View>
-            </TouchableHighlight>
-            <Method onPress={this.handleCalMethod} method={'÷'}/>
+            <Cell onPress={this.handlePoint} num={'.'}/>
+            <Cell onPress={this.handleClear} num={'C'}/>
           </View>
         </View>
-        
       </View>
-    );
+    )}else{return <View/>}
   }
 }
 export default App
 
+const deviceWidth = Dimensions.get('window').width
+const cellWidth = deviceWidth/3
+const cellHeight = Dimensions.get('window').height*0.7/5
 const styles = StyleSheet.create({
-  hi: {
-    backgroundColor: "blue",
-  },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    backgroundColor: '#f1ca69',
+    borderWidth:3,
   },
   title: {
     fontFamily: 'PingFang HK',
@@ -158,35 +197,75 @@ const styles = StyleSheet.create({
   },
   board: {
     padding: 1,
-    backgroundColor: "#000000",
-    borderRadius: 5,
+    backgroundColor: "#1c2938",
   },
   rows: {
     flexDirection: "row",
   },
+  innerRow:{
+    flex:1,
+    flexDirection: "row",
+    backgroundColor:'#48586d',
+    borderRadius:100,
+    marginTop:10,
+    marginBottom:40,
+    marginHorizontal:15,
+    justifyContent:'space-between'
+  },
   cell: {
-    height: 80,
-    width: 80,
-    backgroundColor: "#f1f1f1",
-    borderRadius: 5,
-    margin: 1,
+    height: cellHeight,
+    width: cellWidth,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  showing: {
+  showTab:{
+    flex:0,
+    alignSelf:'center',
+    backgroundColor:'#e3bf64',
+    width:deviceWidth-160,
     height:30,
-    marginTop: 30,
-    fontSize: 20,
+    marginTop:30,
+    borderRadius:30,
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  showing: {
+    flex:1,
+    fontSize: 24,
+    color:'#fff',
     fontFamily: "Chalkduster",
   },
-  textInside: {
-    fontFamily: 'Arial',
-    fontSize: 30,
+  result: {
+    alignSelf:'stretch',
+    alignItems:'center',
   },
-  functionalButton: {
-    backgroundColor: "#ef7b18",
+  resultText: {
+    // borderWidth:3,
+    color:'#1c2938',
+    fontSize: 80,
+    fontFamily: "customFont",
+  },
+  setRadius: {
+    borderRadius:100,
+    // backgroundColor:'#f1ca69',
+  },
+  equal: {
+    backgroundColor:'#f1ca69',
+  },
+  textInside: {
+    fontFamily: 'customFont',
+    fontSize: 70,
+    color:'#959ead',
+    // opacity:0.8,
   },
   functionalText: {
+    height:60,
+    width:60,
+    lineHeight:60,
+    fontSize: 50,
+    textAlign:'center',
     color: "white",
+    fontFamily: 'customFont',
+    // textAlignVertical:'center',
   },
 });
